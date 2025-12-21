@@ -1,0 +1,8 @@
+[package]
+name = "quic-dns"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+compio = { version = "0.17.0", features = ["runtime", "tls"]}
+compio-quic = "0.6.0"
