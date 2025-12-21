@@ -27,7 +27,16 @@ async fn main_async() {
 
     let local_ex = LocalExecutor::new();
 
-    let udp = local_ex.spawn(async move {
+
+    let tcp = local_ex.spawn(async {
+        let resolver = resolver.clone();
+        async move {
+            let binding_socket = SocketAddr::from(([0, 0, 0, 0], port));
+            listener::tcp::start(binding_socket, resolver).await
+        }.await
+    });
+
+    let udp = local_ex.spawn(async {
         let resolver = resolver.clone();
         async move {
             let binding_socket = SocketAddr::from(([0, 0, 0, 0], port));
@@ -36,6 +45,7 @@ async fn main_async() {
     });
 
     _ = local_ex.run(async move {
+        _ = tcp.await;
         _ = udp.await;
     }).await;
 }

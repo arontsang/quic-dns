@@ -1,7 +1,7 @@
-use std::io::{Error, ErrorKind};
-use cyper::Client;
-use bytes::{Buf, Bytes};
 use crate::resolver::DnsResolver;
+use bytes::Bytes;
+use cyper::Client;
+use std::io::{Error, ErrorKind};
 
 pub struct QuicResolver {
     client: Client,
