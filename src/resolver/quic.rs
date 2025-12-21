@@ -1,0 +1,37 @@
+use std::io::{Error, ErrorKind};
+use cyper::Client;
+use bytes::{Buf, Bytes};
+use crate::resolver::DnsResolver;
+
+pub struct QuicResolver {
+    client: Client,
+    endpoint: String,
+}
+
+impl QuicResolver {
+    pub async fn new(endpoint: String) -> Self {
+        let client = Client::new();
+        Self {
+            client,
+            endpoint,
+        }
+    }
+
+    async fn resolve_impl(&'_ self, query: &[u8]) -> Result<Bytes, cyper::Error> {
+        let http_request = self.client.post(&self.endpoint)?
+            .header("accept", "application/dns-message")?
+            .header("content-type", "application/dns-message")?
+            .header("content-length", query.len().to_string())?;
+        let http_request = http_request.body(query.to_vec());
+        let http_response = http_request.send().await?;
+
+        Ok(http_response.bytes().await?)
+    }
+}
+
+impl DnsResolver for QuicResolver {
+    async fn resolve(&'_ self, request: &[u8]) -> Result<Bytes, Error> {
+        let result = self.resolve_impl(request).await;
+        result.map_err(|err| Error::new(ErrorKind::Other, err))
+    }
+}

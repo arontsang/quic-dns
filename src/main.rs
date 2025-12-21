@@ -1,3 +1,11 @@
+mod resolver;
+mod listener;
+
+use std::net::SocketAddr;
+use std::rc::Rc;
+use async_executor::LocalExecutor;
+use rustop::opts;
+
 fn main() -> Result<(), Box<std::io::Error>> {
     let runtime = compio::runtime::Runtime::new()?;
     runtime.block_on(main_async());
@@ -5,5 +13,29 @@ fn main() -> Result<(), Box<std::io::Error>> {
 }
 
 async fn main_async() {
-    println!("Hello, world!");
+    let (args, _) = opts! {
+        synopsis "This is a DNS stub server that proxies to a DOH server.";
+        opt port:Option<u16>, desc:"Port to host DNS proxy Defaults to: 15353";
+        opt server:Option<String>, desc:"DOH Server defaults to: https://1.1.1.1/dns-query" ;
+    }.parse_or_exit();
+
+    let port = args.port.unwrap_or(15353);
+    let server = args.server.unwrap_or("https://1.1.1.1/dns-query".to_string());
+
+    let resolver = resolver::quic::QuicResolver::new(server).await;
+    let resolver = Rc::new(resolver);
+
+    let local_ex = LocalExecutor::new();
+
+    let udp = local_ex.spawn(async move {
+        let resolver = resolver.clone();
+        async move {
+            let binding_socket = SocketAddr::from(([0, 0, 0, 0], port));
+            listener::udp::start(binding_socket, resolver).await
+        }.await
+    });
+
+    _ = local_ex.run(async move {
+        _ = udp.await;
+    }).await;
 }
