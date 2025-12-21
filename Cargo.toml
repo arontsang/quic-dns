@@ -4,10 +4,14 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-compio = { version = "0.17.0", features = ["runtime", "tls"]}
-compio-quic = "0.6.0"
-cyper = "0.7.1"
+compio = { version = "0.17.0", features = ["runtime"]}
+cyper = { version ="0.7.1", features = ["http3", "native-tls"] }
 bytes = "1.11.0"
-async-unsync = "0.3.0"
 async-executor = "1.13.3"
 rustop = "1.1.4"
+
+[profile.release]
+lto = true
+panic = 'abort'
+opt-level = 'z'
+codegen-units = 1
