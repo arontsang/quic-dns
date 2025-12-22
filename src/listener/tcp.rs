@@ -5,6 +5,7 @@ use compio::io::{AsyncReadExt, AsyncWriteExt};
 use compio::net::{TcpListener, TcpStream};
 use std::net::SocketAddr;
 use std::rc::Rc;
+use cyper::Body;
 
 async fn do_work<T : DnsResolver + 'static>(resolver: Rc<T>, mut client: TcpStream) -> Result<(), std::io::Error>{
     let length = client.read_u16().await?;
@@ -13,7 +14,9 @@ async fn do_work<T : DnsResolver + 'static>(resolver: Rc<T>, mut client: TcpStre
     let query = Vec::with_capacity(length);
     let (_, query) = buf_try!(@try client.read_exact(query).await);
 
-    let response = resolver.resolve(query.as_slice()).await?;
+    let query = query.to_vec();
+    let query = Body::from(query);
+    let response = resolver.resolve(query).await?;
 
     client.write_u16(response.len() as u16).await?;
 

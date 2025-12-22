@@ -1,5 +1,6 @@
 mod resolver;
 mod listener;
+mod buffer;
 
 use std::net::SocketAddr;
 use std::rc::Rc;

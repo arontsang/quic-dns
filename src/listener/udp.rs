@@ -5,10 +5,12 @@ use std::rc::Rc;
 use async_executor::LocalExecutor;
 use std::io::Error;
 use compio::buf::buf_try;
+use cyper::Body;
 
 async fn do_work<T : DnsResolver + 'static>(query: &[u8], resolver: Rc<T>, socket: Rc<UdpSocket>, client: SocketAddr) -> Result<(), Error>{
-
-    let response = resolver.resolve(query).await?;
+    let body = query.to_vec();
+    let body = Body::from(body);
+    let response = resolver.resolve(body).await?;
     buf_try!(@try socket.send_to(response, client).await);
     Ok(())
 }
