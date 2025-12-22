@@ -1,0 +1,73 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+
+jobs:
+  release:
+    name: Release - ${{ matrix.platform.os-name }}
+    strategy:
+      matrix:
+        platform:
+#          - os-name: FreeBSD-x86_64
+#            runs-on: ubuntu-24.04
+#            target: x86_64-unknown-freebsd
+
+          - os-name: Linux-x86_64
+            runs-on: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            cross: false
+
+#          - os-name: Linux-aarch64
+#            runs-on: ubuntu-24.04
+#            target: aarch64-unknown-linux-gnu
+#            cross: true
+#
+#          - os-name: Linux-mipsel
+#            runs-on: ubuntu-24.04
+#            target: mipsel-unknown-linux-gnu
+#            cross: true
+
+#          - os-name: Linux-riscv64
+#            runs-on: ubuntu-24.04
+#            target: riscv64gc-unknown-linux-gnu
+
+#          - os-name: Windows-x86_64
+#            runs-on: windows-latest
+#            target: x86_64-pc-windows-msvc
+
+#          - os-name: macOS-x86_64
+#            runs-on: macOS-latest
+#            target: x86_64-apple-darwin
+
+          # more targets here ...
+
+    runs-on: ubuntu-22.04
+
+    container:
+      image: debian:12
+    steps:
+      - name: Install Dependencies
+        run: |
+          apt-get update && apt-get install -y python3-pip curl build-essential libssl-dev pkg-config
+          pkg-config --libs openssl
+          pkg-config --cflags openssl
+      - name: Install rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform.target }}
+      - name: Install Zig and cargo-zigbuild
+        run: |
+          # Install zig from PyPI via pip
+          python3 -m pip install ziglang --break-system-packages
+          # Install cargo-zigbuild
+          python3 -m pip install cargo-zigbuild --break-system-packages
+
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build binary
+        run: cargo zigbuild --release
