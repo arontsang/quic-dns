@@ -19,6 +19,7 @@ async fn do_work<T : DnsResolver + 'static>(query: Body, resolver: Rc<T>, socket
 
 pub async fn start<T : DnsResolver + 'static>(bind_address: SocketAddr, resolver: Rc<T>) -> Result<(), Error> {
     let socket = UdpSocket::bind(bind_address).await?;
+    println!("Listening on udp port {}", socket.local_addr()?);
     let socket = Rc::new(socket);
 
     let local_ex = Rc::new(LocalExecutor::new());

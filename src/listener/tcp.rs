@@ -32,6 +32,7 @@ async fn do_work<T : DnsResolver + 'static>(pool: &Rc<BufferPool>, resolver: Rc<
 
 pub async fn start<T : DnsResolver + 'static >(bind_address: SocketAddr, resolver: Rc<T>) -> Result<(), std::io::Error> {
     let listener = TcpListener::bind(bind_address).await?;
+    println!("Listening on tcp port {}", listener.local_addr()?);
     let local_ex = Rc::new(LocalExecutor::new());
     local_ex.run(async {
         let local_ex = local_ex.clone();
