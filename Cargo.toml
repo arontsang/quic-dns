@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-compio = { version = "0.17.0", features = ["runtime"]}
-cyper = { version ="0.7.1", features = ["http3", "native-tls"] }
+compio = { version = "0.17.0", default-features = false, features = ["runtime"]}
+cyper = { version ="0.7.1",default-features = false , features = ["http3", "rustls"] }
 bytes = "1.11.0"
 async-executor = "1.13.3"
 rustop = "1.1.4"
@@ -16,3 +16,4 @@ lto = true
 panic = 'abort'
 opt-level = 'z'
 codegen-units = 1
+strip = true

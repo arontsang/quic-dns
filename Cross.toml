@@ -1,16 +1,2 @@
-[build]
-pre-build = [
-    "dpkg --add-architecture $CROSS_DEB_ARCH",
-    "apt-get update",
-    "apt-get -y install libssl-dev:$CROSS_DEB_ARCH"
-]
-
 [target.mipsel-unknown-linux-gnu]
-build-std = ["core", "alloc", "std"]
-xargo = true
-pre-build = [
-    "dpkg --add-architecture $CROSS_DEB_ARCH",
-    "echo \"deb http://deb.debian.org/debian/ bullseye main contrib non-free\ndeb-src http://deb.debian.org/debian/ bullseye main contrib non-free\" > /etc/apt/sources.list.d/backport.list ",
-    "apt-get update",
-    "apt-get -y install libssl-dev:$CROSS_DEB_ARCH"
-]
+build-std = ["core", "alloc"]
