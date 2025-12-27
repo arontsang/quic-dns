@@ -140,8 +140,10 @@ source = "git+https://github.com/compio-rs/compio.git?rev=7517a0f#7517a0fcd5893d
 dependencies = [
  "compio-buf",
  "compio-driver",
+ "compio-fs",
  "compio-io",
  "compio-log",
+ "compio-net",
  "compio-quic",
  "compio-runtime",
  "compio-tls",
@@ -176,6 +178,23 @@ dependencies = [
  "pin-project-lite",
  "polling",
  "socket2",
+ "windows-sys 0.61.2",
+]
+
+[[package]]
+name = "compio-fs"
+version = "0.10.0"
+source = "git+https://github.com/compio-rs/compio.git?rev=7517a0f#7517a0fcd5893d3ee426ce38cf9203b288e5f16d"
+dependencies = [
+ "cfg-if",
+ "cfg_aliases",
+ "compio-buf",
+ "compio-driver",
+ "compio-io",
+ "compio-runtime",
+ "libc",
+ "os_pipe",
+ "widestring",
  "windows-sys 0.61.2",
 ]
 
@@ -359,8 +378,7 @@ dependencies = [
 [[package]]
 name = "cyper"
 version = "0.7.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7442418b16e89f9c04b91ea2d9e8bfd55529d6767e656d4221cfbca67a07ba61"
+source = "git+https://github.com/compio-rs/cyper.git?rev=4870851#4870851bc6c96a0e02c8f25aaff4c0d7523a93ff"
 dependencies = [
  "async-stream",
  "base64",
@@ -390,8 +408,7 @@ dependencies = [
 [[package]]
 name = "cyper-core"
 version = "0.7.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7f4b86aa741e422dab7f730aa1ec5ab6bc26569e577fe2b8fe0ebf6d779b2325"
+source = "git+https://github.com/compio-rs/cyper.git?rev=4870851#4870851bc6c96a0e02c8f25aaff4c0d7523a93ff"
 dependencies = [
  "compio",
  "futures-util",
@@ -949,6 +966,16 @@ name = "openssl-probe"
 version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d05e27ee213611ffe7d6348b942e8f942b37114c00cc03cec254295a4a17852e"
+
+[[package]]
+name = "os_pipe"
+version = "1.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7d8fae84b431384b68627d0f9b3b1245fcf9f46f6c0e3dc902e9dce64edd1967"
+dependencies = [
+ "libc",
+ "windows-sys 0.45.0",
+]
 
 [[package]]
 name = "parking"
@@ -2121,11 +2148,6 @@ dependencies = [
 [[patch.unused]]
 name = "compio-dispatcher"
 version = "0.9.0"
-source = "git+https://github.com/compio-rs/compio.git?rev=7517a0f#7517a0fcd5893d3ee426ce38cf9203b288e5f16d"
-
-[[patch.unused]]
-name = "compio-fs"
-version = "0.10.0"
 source = "git+https://github.com/compio-rs/compio.git?rev=7517a0f#7517a0fcd5893d3ee426ce38cf9203b288e5f16d"
 
 [[patch.unused]]
