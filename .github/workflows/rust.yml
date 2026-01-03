@@ -2,7 +2,7 @@ name: Rust
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "mipsel-build" ]
   pull_request:
     branches: [ "main" ]
 
@@ -24,12 +24,12 @@ jobs:
             toolchain: stable
             args: "--locked --release"
 
-          - os-name: Linux-aarch64
-            runs-on: ubuntu-22.04
-            target: aarch64-unknown-linux-gnu
-            cross: true
-            toolchain: stable
-            args: "--locked --release"
+#          - os-name: Linux-aarch64
+#            runs-on: ubuntu-22.04
+#            target: aarch64-unknown-linux-gnu
+#            cross: true
+#            toolchain: stable
+#            args: "--locked --release"
 
           - os-name: Linux-mipsel
             runs-on: ubuntu-24.04
@@ -55,8 +55,6 @@ jobs:
 
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -73,7 +71,7 @@ jobs:
       - name: Install zig and cargo-zigbuild
         run: |
           python3 -m pip install ziglang
-          cargo install cargo-zigbuild
+          cargo +nightly install cargo-zigbuild
       - name: Install Rust stable toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -81,10 +79,11 @@ jobs:
       - name: Install Rust nightly toolchain
         run: |
           rustup +nightly component add rust-src
-          cargo +nightly build -Z build-std --target ${{ matrix.platform.target }}
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Build with cargo-zigbuild
         # Use cargo zigbuild followed by the target
-        run: cargo zigbuild --release +nightly --target ${{ matrix.platform.target }}
+        run: cargo +nightly zigbuild -Z build-std --release --target ${{ matrix.platform.target }}
       - name: Upload artifact
         uses: actions/upload-artifact@v4 # Uses the official action
         with:
