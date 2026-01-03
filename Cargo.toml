@@ -4,30 +4,13 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-compio = { version = "0.17.0", default-features = false, features = ["fs", "net", "runtime"]}
+compio = { git = "https://github.com/arontsang/compio.git", rev = "1a7337f",  default-features = false, features = ["runtime"]}
 cyper = { version ="0.7.1",default-features = false , features = ["http3", "rustls"] }
 bytes = "1.11.0"
 async-executor = "1.13.3"
 rustop = "1.1.4"
 zeropool = "0.3.1"
 
-[patch.crates-io]
-compio = { git = "https://github.com/compio-rs/compio.git", rev = "7517a0f"}
-compio-buf = { git = "https://github.com/compio-rs/compio.git", rev = "7517a0f" }
-compio-dispatcher = { git = "https://github.com/compio-rs/compio.git", rev = "7517a0f" }
-compio-driver = { git = "https://github.com/compio-rs/compio.git", rev = "7517a0f" }
-compio-fs = { git = "https://github.com/compio-rs/compio.git", rev = "7517a0f" }
-compio-io = { git = "https://github.com/compio-rs/compio.git", rev = "7517a0f" }
-compio-log = { git = "https://github.com/compio-rs/compio.git", rev = "7517a0f" }
-compio-macros = { git = "https://github.com/compio-rs/compio.git", rev = "7517a0f" }
-compio-net = { git = "https://github.com/compio-rs/compio.git", rev = "7517a0f" }
-compio-process = { git = "https://github.com/compio-rs/compio.git", rev = "7517a0f" }
-compio-quic = { git = "https://github.com/compio-rs/compio.git", rev = "7517a0f" }
-compio-runtime = { git = "https://github.com/compio-rs/compio.git", rev = "7517a0f" }
-compio-signal = { git = "https://github.com/compio-rs/compio.git", rev = "7517a0f" }
-compio-tls = { git = "https://github.com/compio-rs/compio.git", rev = "7517a0f" }
-compio-ws = { git = "https://github.com/compio-rs/compio.git", rev = "7517a0f" }
-cyper = { git = "https://github.com/compio-rs/cyper.git", rev = "4870851" }
 
 [profile.release]
 lto = true
