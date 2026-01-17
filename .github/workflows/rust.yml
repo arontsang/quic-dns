@@ -34,9 +34,9 @@ jobs:
             target: mipsel-unknown-linux-gnu
             cross: true
             toolchain: nightly
-          - os-name: Linux-mipsel-musl
+          - os-name: Linux-mipsel-uclibc
             runs-on: ubuntu-24.04
-            target: mipsel-unknown-linux-musl
+            target: mipsel-unknown-linux-uclibc
             cross: true
             toolchain: nightly
 
@@ -82,6 +82,7 @@ jobs:
       - name: Install Rust nightly toolchain
         run: |
           rustup +nightly component add rust-src
+          rustup target add --toolchain nightly ${{ matrix.platform.target }}
       - name: Checkout
         uses: actions/checkout@v4
       - name: Build with cargo-zigbuild
