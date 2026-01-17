@@ -8,7 +8,7 @@ edition = "2024"
 strict = []
 
 [dependencies]
-compio = { version = "0.17.0", default-features = false, features = ["fs", "net", "runtime"]}
+compio = { version = "0.17.0", default-features = false, features = ["fs", "net", "polling"]}
 cyper = { version ="0.7.1",default-features = false , features = ["http3", "rustls"] }
 bytes = "1.11.0"
 async-executor = "1.13.3"
