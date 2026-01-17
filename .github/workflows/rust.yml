@@ -22,23 +22,27 @@ jobs:
             target: x86_64-unknown-linux-gnu
             cross: false
             toolchain: stable
+            args: "--release --locked --features \"strict\" "
 
           - os-name: Linux-aarch64
             runs-on: ubuntu-22.04
             target: aarch64-unknown-linux-gnu
             cross: true
             toolchain: stable
+            args: "--release --locked --features \"strict\" "
 
           - os-name: Linux-mipsel-gnu
             runs-on: ubuntu-24.04
             target: mipsel-unknown-linux-gnu
             cross: true
             toolchain: nightly
+            args: "--release --locked --features \"strict\" -Z build-std=core,std,panic_abort"
           - os-name: Linux-mipsel-uclibc
             runs-on: ubuntu-24.04
             target: mipsel-unknown-linux-uclibc
             cross: true
             toolchain: nightly
+            args: "--release --locked --features \"strict\" -Z build-std=core,std,panic_abort"
 
 #          - os-name: Linux-riscv64
 #            runs-on: ubuntu-24.04
@@ -57,37 +61,48 @@ jobs:
 
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential python3-pip curl
-      - name: Install cross compiler
-        if: ${{ matrix.platform.cross }}
-        run: |
-          TARGET=${{ matrix.platform.target }}
-          ARCH=$(echo "$TARGET" | cut -d"-" -f1)
-          LIBC=$(echo "$TARGET" | rev | cut -d"-" -f1 | rev)
-          sudo apt-get install -y  \
-            gcc-${ARCH}-linux-gnu g++-${ARCH}-linux-gnu \
-            musl-tools musl-dev
-
-      - name: Install zig and cargo-zigbuild
-        run: |
-          python3 -m pip install ziglang
-          cargo +nightly install cargo-zigbuild
-      - name: Install Rust stable toolchain
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: ${{ matrix.platform.toolchain }}
-      - name: Install Rust nightly toolchain
-        run: |
-          rustup +nightly component add rust-src
-          rustup target add --toolchain nightly ${{ matrix.platform.target }}
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Build with cargo-zigbuild
-        # Use cargo zigbuild followed by the target
-        run: cargo +nightly zigbuild -Z build-std=core,std,panic_abort --features "strict"  --release --target ${{ matrix.platform.target }}
+      - name: Build binary
+        uses: houseabsolute/actions-rust-cross@v1
+        with:
+          command: build
+          target: ${{ matrix.platform.target }}
+          args: ${{ matrix.platform.args }}
+          strip: true
+          toolchain: ${{ matrix.platform.toolchain }}
+
+#      - name: Install dependencies
+#        run: |
+#          sudo apt-get update
+#          sudo apt-get install -y build-essential python3-pip curl
+#      - name: Install cross compiler
+#        if: ${{ matrix.platform.cross }}
+#        run: |
+#          TARGET=${{ matrix.platform.target }}
+#          ARCH=$(echo "$TARGET" | cut -d"-" -f1)
+#          LIBC=$(echo "$TARGET" | rev | cut -d"-" -f1 | rev)
+#          sudo apt-get install -y  \
+#            gcc-${ARCH}-linux-gnu g++-${ARCH}-linux-gnu \
+#            musl-tools musl-dev
+#
+#      - name: Install zig and cargo-zigbuild
+#        run: |
+#          python3 -m pip install ziglang
+#          cargo +nightly install cargo-zigbuild
+#      - name: Install Rust stable toolchain
+#        uses: dtolnay/rust-toolchain@stable
+#        with:
+#          toolchain: ${{ matrix.platform.toolchain }}
+#      - name: Install Rust nightly toolchain
+#        run: |
+#          rustup +nightly component add rust-src
+#          rustup target add ${{ matrix.platform.target }} --toolchain nightly
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#      - name: Build with cargo-zigbuild
+#        # Use cargo zigbuild followed by the target
+#        run: cargo +nightly zigbuild -Z build-std=core,std,panic_abort --features "strict"  --release --target ${{ matrix.platform.target }}
       - name: Upload artifact
         uses: actions/upload-artifact@v4 # Uses the official action
         with:

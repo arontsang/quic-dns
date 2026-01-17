@@ -1,3 +1,9 @@
 [target.mipsel-unknown-linux-gnu]
 build-std = ["core", "alloc"]
 panic_abort = []
+image = "ghcr.io/cross-rs/mips-unknown-linux-gnu:main"
+
+[target.mipsel-unknown-linux-musl]
+build-std = ["core", "alloc"]
+panic_abort = []
+image = "ghcr.io/cross-rs/mips-unknown-linux-musl:main"
