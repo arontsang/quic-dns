@@ -22,21 +22,23 @@ jobs:
             target: x86_64-unknown-linux-gnu
             cross: false
             toolchain: stable
-            args: "--locked --release"
 
-#          - os-name: Linux-aarch64
-#            runs-on: ubuntu-22.04
-#            target: aarch64-unknown-linux-gnu
-#            cross: true
-#            toolchain: stable
-#            args: "--locked --release"
+          - os-name: Linux-aarch64
+            runs-on: ubuntu-22.04
+            target: aarch64-unknown-linux-gnu
+            cross: true
+            toolchain: stable
 
-          - os-name: Linux-mipsel
+          - os-name: Linux-mipsel-gnu
             runs-on: ubuntu-24.04
             target: mipsel-unknown-linux-gnu
             cross: true
             toolchain: nightly
-            args: "--locked --release -Zbuild-std"
+          - os-name: Linux-mipsel-musl
+            runs-on: ubuntu-24.04
+            target: mipsel-unknown-linux-musl
+            cross: true
+            toolchain: nightly
 
 #          - os-name: Linux-riscv64
 #            runs-on: ubuntu-24.04
@@ -66,7 +68,8 @@ jobs:
           ARCH=$(echo "$TARGET" | cut -d"-" -f1)
           LIBC=$(echo "$TARGET" | rev | cut -d"-" -f1 | rev)
           sudo apt-get install -y  \
-            gcc-${ARCH}-linux-${LIBC} g++-${ARCH}-linux-${LIBC}
+            gcc-${ARCH}-linux-gnu g++-${ARCH}-linux-gnu \
+            musl-tools musl-dev
 
       - name: Install zig and cargo-zigbuild
         run: |
@@ -83,18 +86,9 @@ jobs:
         uses: actions/checkout@v4
       - name: Build with cargo-zigbuild
         # Use cargo zigbuild followed by the target
-        run: cargo +nightly zigbuild -Z build-std --release --target ${{ matrix.platform.target }}
+        run: cargo +nightly zigbuild -Z build-std=core,std,panic_abort --features "strict"  --release --target ${{ matrix.platform.target }}
       - name: Upload artifact
         uses: actions/upload-artifact@v4 # Uses the official action
         with:
           name: quic-dns.${{ matrix.platform.target }}
           path: target/${{ matrix.platform.target }}/release/quic-dns*
-#      - name: Build binary
-#        uses: houseabsolute/actions-rust-cross@v1
-#        with:
-#          command: build
-#          target: ${{ matrix.platform.target }}
-#          args: ${{ matrix.platform.args }}
-#          strip: true
-#          toolchain: ${{ matrix.platform.toolchain }}
-#          force-use-cross: ${{ matrix.platform.cross }}

@@ -3,14 +3,36 @@ name = "quic-dns"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+# Treat warnings as a build error.
+strict = []
+
 [dependencies]
-compio = { git = "https://github.com/arontsang/compio.git", rev = "1a7337f",  default-features = false, features = ["runtime"]}
+compio = { version = "0.17.0", default-features = false, features = ["fs", "net", "runtime"]}
 cyper = { version ="0.7.1",default-features = false , features = ["http3", "rustls"] }
 bytes = "1.11.0"
 async-executor = "1.13.3"
 rustop = "1.1.4"
 zeropool = "0.3.1"
 
+[patch.crates-io]
+compio =  { git = "https://github.com/compio-rs/compio.git", rev = "90a4031"}
+compio-buf = { git = "https://github.com/compio-rs/compio.git", rev = "90a4031"}
+compio-dispatcher = { git = "https://github.com/compio-rs/compio.git", rev = "90a4031"}
+compio-driver = { git = "https://github.com/compio-rs/compio.git", rev = "90a4031"}
+compio-fs = { git = "https://github.com/compio-rs/compio.git", rev = "90a4031"}
+compio-io = { git = "https://github.com/compio-rs/compio.git", rev = "90a4031"}
+compio-log = { git = "https://github.com/compio-rs/compio.git", rev = "90a4031"}
+compio-macros = { git = "https://github.com/compio-rs/compio.git", rev = "90a4031"}
+compio-net = { git = "https://github.com/compio-rs/compio.git", rev = "90a4031"}
+compio-process = { git = "https://github.com/compio-rs/compio.git", rev = "90a4031"}
+compio-quic = { git = "https://github.com/compio-rs/compio.git", rev = "90a4031"}
+compio-runtime = { git = "https://github.com/compio-rs/compio.git", rev = "90a4031"}
+compio-signal = { git = "https://github.com/compio-rs/compio.git", rev = "90a4031"}
+compio-tls = { git = "https://github.com/compio-rs/compio.git", rev = "90a4031"}
+compio-ws = { git = "https://github.com/compio-rs/compio.git", rev = "90a4031"}
+
+cyper = { git = "https://github.com/compio-rs/cyper.git", rev = "4870851"}
 
 [profile.release]
 lto = true

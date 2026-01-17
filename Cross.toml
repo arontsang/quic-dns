@@ -1,2 +1,3 @@
 [target.mipsel-unknown-linux-gnu]
 build-std = ["core", "alloc"]
+panic_abort = []

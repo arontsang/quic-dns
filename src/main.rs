@@ -1,3 +1,4 @@
+#![cfg_attr(feature = "strict", deny(warnings))]
 mod resolver;
 mod listener;
 mod buffer;

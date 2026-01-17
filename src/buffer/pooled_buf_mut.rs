@@ -1,6 +1,6 @@
-
-use compio::buf::{IoBuf, IoBufMut, IoSliceMut, SetBufInit};
 use std::mem::MaybeUninit;
+use compio::buf::{IoBuf, IoBufMut, SetLen};
+
 use zeropool::PooledBuffer;
 
 pub struct PooledBufMut {
@@ -21,42 +21,31 @@ impl Into<PooledBuffer> for PooledBufMut {
     }
 }
 
-
-
-unsafe impl IoBuf for PooledBufMut {
-    fn as_buf_ptr(&self) -> *const u8 {
-        self.buf.as_buf_ptr()
+impl IoBuf for PooledBufMut {
+    fn as_init(&self) -> &[u8] {
+        self.buf.as_init()
     }
 
     fn buf_len(&self) -> usize {
         self.buf.buf_len()
     }
 
-    fn buf_capacity(&self) -> usize {
-        self.buf.buf_capacity()
+    fn buf_ptr(&self) -> *const u8 {
+        self.buf.buf_ptr()
     }
 }
 
-impl SetBufInit for PooledBufMut {
-    unsafe fn set_buf_init(&mut self, len: usize)  {
-        debug_assert!(len <= self.buf.len());
-    }
-}
-
-unsafe impl IoBufMut for PooledBufMut {
-    fn as_buf_mut_ptr(&mut self) -> *mut u8 {
-        self.buf.as_mut_ptr()
-    }
-
-    fn as_mut_slice(&mut self) -> &mut [MaybeUninit<u8>] {
+impl SetLen for PooledBufMut {
+    unsafe fn set_len(&mut self, len: usize) {
         unsafe {
-            let slice =  self.buf.as_mut_slice();
-            std::slice::from_raw_parts_mut(slice.as_mut_ptr() as *mut MaybeUninit<u8>, slice.len())
+            self.buf.set_len(len)
         }
     }
+}
 
-    unsafe fn as_io_slice_mut(&mut self) -> IoSliceMut {
-        let slice =  self.buf.as_mut_slice();
-        unsafe { IoSliceMut::from_slice(slice) }
+impl IoBufMut for PooledBufMut {
+    fn as_uninit(&mut self) -> &mut [MaybeUninit<u8>] {
+        self.buf.as_uninit()
     }
 }
+
