@@ -2,7 +2,7 @@ name: Rust
 
 on:
   push:
-    branches: [ "main", "mipsel-build" ]
+    branches: [ "main", "tokio" ]
   pull_request:
     branches: [ "main" ]
 

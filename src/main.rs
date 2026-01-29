@@ -7,13 +7,10 @@ use std::rc::Rc;
 use async_executor::LocalExecutor;
 use rustop::opts;
 
-fn main() -> Result<(), Box<std::io::Error>> {
-    let runtime = compio::runtime::Runtime::new()?;
-    runtime.block_on(main_async());
-    Ok(())
-}
 
-async fn main_async() {
+
+#[tokio::main(flavor = "current_thread")]
+async fn main() {
     let (args, _) = opts! {
         synopsis "This is a DNS stub server that proxies to a DOH server.";
         opt port:Option<u16>, desc:"Port to host DNS proxy Defaults to: 15353";

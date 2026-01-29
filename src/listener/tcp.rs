@@ -1,31 +1,28 @@
-use crate::buffer::pooled_buf_mut::PooledBufMut;
 use crate::resolver::DnsResolver;
 use async_executor::LocalExecutor;
 use bytes::Bytes;
-use compio::buf::{buf_try, IntoInner, IoBuf};
-use compio::io::{AsyncReadExt, AsyncWriteExt};
-use compio::net::{TcpListener, TcpStream};
-use cyper::Body;
+
 use std::net::SocketAddr;
 use std::rc::Rc;
-use zeropool::{BufferPool, PooledBuffer};
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::net::{TcpListener, TcpStream};
+use zeropool::{BufferPool};
 
 async fn do_work<T : DnsResolver + 'static>(pool: &Rc<BufferPool>, resolver: Rc<T>, mut client: TcpStream) -> Result<(), std::io::Error>{
     let length = client.read_u16().await?;
     let length: usize = length.into();
 
-    let query = pool.get(length);
-    let query = PooledBufMut::new(query);
-    let (_, query) = buf_try!(@try client.read_exact(query.slice(..length)).await);
+    let mut query = pool.get(length);
 
-    let query: PooledBuffer = query.into_inner().into();
+
+    client.read_exact(&mut query.as_mut_slice()[..length]).await?;
+
+
     let query = Bytes::from_owner(query);
-    let query = Body::from(query);
     let response = resolver.resolve(query).await?;
 
     client.write_u16(response.len() as u16).await?;
-
-    buf_try!(@try client.write_all(response).await);
+    client.write_all(&response).await?;
 
     Ok(())
 }
